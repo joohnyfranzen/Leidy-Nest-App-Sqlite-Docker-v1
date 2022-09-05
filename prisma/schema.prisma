@@ -1,0 +1,166 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ----- USER ----- //
+
+model User {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  email String @unique
+  hash  String?
+  password  String?
+
+  name String?
+  
+  rating        Float?
+  nick_name     String?
+  perfil_photo  String?
+  
+  employee Employee[]
+  order Order[]
+  chatFrom Chat[] @relation("userFrom")
+  chatTo Chat[] @relation("userTo")
+  
+  @@map("user")
+}
+
+// ----- CHAT ----- //
+
+model Chat {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  message   String
+  viewed    Boolean   @default(false)
+  status    Int       @default(0)
+  
+  userFromId Int
+  userFrom User @relation("userFrom", fields:[userFromId], references: [id])
+  userToId   Int
+  userTo User @relation("userTo", fields:[userToId], references: [id])
+}
+
+// ----- CLIENT ----- //
+
+model Client {
+  id        Int       @id  @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // orderId
+}
+
+// ----- Employee ----- //
+
+model Employee {
+  id        Int       @id  @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  hour_price  Int?
+  cpf         String? @unique
+  userId      Int  
+  user        User  @relation(fields:[userId], references: [id])
+
+  @@map("employees")
+  // scheduleId
+}
+
+// ----- Location ----- //
+
+model Location {
+  id        Int       @id  @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  cord_maps String
+}
+
+// ----- Order ----- //
+
+model Order {
+  id        Int       @id  @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  title       String
+  type        String 
+  description String
+  price       Int?
+
+  month_date_start  DateTime?
+  month_date_end    DateTime?
+  weekly            Boolean?
+  week_day_start    Int?   
+  week_day_end      Int?   
+  daily             Boolean?
+  weekend           Boolean?
+  holiday           Boolean?
+  
+  userGet           Int?              
+
+  userId      Int
+  user        User  @relation(fields:[userId], references: [id])
+}
+
+// ----- Phone ----- //
+
+model Phone {
+  id        Int       @id  @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  number  String 
+}
+
+// ----- Rating ----- //
+
+model Rating {
+  id        Int       @id  @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user_from Int
+  user_to   Int
+  status    Int     @default(1)
+  value     Int     
+  text      String 
+}
+
+//  ----- Report Error -----  //
+
+model Report_error {
+  id        Int       @id  @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  error_type  Int     
+  message     String  
+  S0          String  
+  app_version String
+}
+
+//  ----- Schedule  ----- //
+
+model Schedule {
+  id        Int       @id  @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  week_day    Int     
+  hour_start  String  
+  hour_end    Int
+  status      Int     
+}
